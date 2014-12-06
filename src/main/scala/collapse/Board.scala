@@ -41,4 +41,6 @@ object Board {
 
 case class Board(underlying: Seq[Seq[BoardItem.BoardItem]]) {
 
+  def size = underlying.size
+
 }
