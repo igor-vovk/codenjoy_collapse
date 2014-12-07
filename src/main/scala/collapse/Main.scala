@@ -4,8 +4,7 @@ import java.net.URI
 
 import akka.actor.ActorSystem
 import collapse.strategy.{Direction, RandomActionStrategy, Strategy}
-import io.backchat.hookup.{TextMessage, HookupClientConfig, DefaultHookupClient}
-import io.backchat.hookup.HookupClient.Receive
+import io.backchat.hookup.{Disconnected, TextMessage, HookupClientConfig, DefaultHookupClient}
 
 
 object Main extends App {
@@ -20,7 +19,9 @@ object Main extends App {
   val strategy: Strategy = new RandomActionStrategy
 
   new DefaultHookupClient(HookupClientConfig(uri)) {
-    override def receive: Receive = {
+    override def receive = {
+      case Disconnected(_) =>
+        println("The websocket disconnected.")
       case TextMessage(text) =>
         println(s"<-- $text")
 
@@ -40,7 +41,7 @@ object Main extends App {
 
     connect() onSuccess {
       case _ =>
-        println("Successfuly connected to websocket server")
+        println("Successfuly connected to server")
     }
   }
 

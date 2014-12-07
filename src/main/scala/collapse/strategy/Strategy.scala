@@ -4,6 +4,6 @@ import collapse.Board
 
 trait Strategy {
 
-  def act(board: Board): Action
+  def act(board: Board): Move
 
 }

@@ -2,7 +2,7 @@ package collapse.strategy
 
 import collapse.strategy.Direction._
 
-trait Action {
+trait Move {
 
   def coords: (Int, Int)
 
