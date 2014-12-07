@@ -4,7 +4,9 @@ import collapse.Field.{NumericField, Field}
 
 object Field {
 
-  sealed trait Field
+  sealed trait Field {
+    def ch: Char
+  }
 
   case class Item(ch: Char) extends Field
 
@@ -32,10 +34,27 @@ object Board {
     val length = math.sqrt(str.length).toInt
 
     val boardArr = for {
-      i <- 0 to math.pow(length - 1, 2).toInt by length
+      i <- 0 to ((length - 1) * length) by length
     } yield str.substring(i, i + length).toArray.flatMap(Field.charToField).toSeq
 
     new SeqBackedBoardImpl(boardArr)
+  }
+
+  def serialize(board: Board): String = {
+    val sb = new StringBuilder
+    sb.append("\r\n")
+
+    for {
+      x <- 0 to (board.size - 1)
+      y <- 0 to (board.size - 1)
+    } {
+      sb.append(board.get(x, y).ch)
+      if (y == board.size - 1) {
+        sb.append("\r\n")
+      }
+    }
+
+    sb.toString()
   }
 
 }
@@ -47,6 +66,8 @@ trait Board {
   def get(coords: Coords): Field
 
   def set(coords: Coords, item: NumericField): Board
+
+  override def toString: String = "Board(" + Board.serialize(this) + ")"
 
 }
 
@@ -66,4 +87,5 @@ class SeqBackedBoardImpl(underlying: Seq[Seq[Field]]) extends Board {
 
     new SeqBackedBoardImpl(underlying.updated(x, underlying(x).updated(y, item)))
   }
+
 }
