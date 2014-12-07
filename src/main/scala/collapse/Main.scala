@@ -28,8 +28,10 @@ object Main extends App {
         text match {
           case boardRegexp(boardStr) =>
             val action = strategy.act(Board.parse(boardStr))
+            val (x, y) = action.coords
+            val dir = Direction.strRepr(action.direction)
 
-            val msg = s"ACT(${action.coords._1},${action.coords._2}),${Direction.strRepr(action.direction)}"
+            val msg = s"ACT($x,$y),$dir"
 
             println(s"--> $msg")
 
