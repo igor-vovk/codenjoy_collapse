@@ -43,7 +43,7 @@ object Main extends App {
 
     connect() onSuccess {
       case _ =>
-        println("Successfuly connected to server")
+        println("Successfully connected to server")
     }
   }
 
