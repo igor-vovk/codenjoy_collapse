@@ -1,26 +1,23 @@
 package collapse
 
-import collapse.Field.{NumericField, Field}
+import collapse.Field.Field
 
 object Field {
 
   sealed trait Field {
     def ch: Char
   }
-
   case class Item(ch: Char) extends Field
-
-  case class NumericField(ch: Char, number: Int) extends Field
 
   val None = Item(' ')
   val Border = Item('☼')
-  val NumChars = (0 to 9).map { num =>
-    val chRepr = num.toString.apply(0)
 
-    chRepr -> NumericField(chRepr, num)
-  }.toMap
+  val NumFields = (0 to 9).map(num => Item(num.toString.apply(0)))
+  val NumChars = NumFields.map(field => field.ch -> field).toMap
 
   def isNumeric(ch: Char): Boolean = NumChars.contains(ch)
+
+  def isNumeric(field: Field): Boolean = NumFields.contains(field)
 
   def charToField(ch: Char): Option[Field] = ch match {
     case None.ch => Some(None)
@@ -71,7 +68,7 @@ trait Board {
 
   def get(point: Point): Field
 
-  def set(point: Point, item: NumericField): Board
+  def updated(point: Point, item: Field): Board
 
   override def toString: String = "Board(" + Board.serialize(this) + ")"
 
@@ -79,7 +76,7 @@ trait Board {
 
 class SeqBackedBoardImpl(underlying: Seq[Seq[Field]]) extends Board {
 
-  override def size = underlying.size
+  override lazy val size = underlying.size
 
   override def contains(point: Point): Boolean = {
     def isInBounds(a: Int) = a > 0 && a < size
@@ -91,7 +88,7 @@ class SeqBackedBoardImpl(underlying: Seq[Seq[Field]]) extends Board {
 
   override def get(coords: Point) = underlying(coords._1)(coords._2)
 
-  override def set(coords: Point, item: NumericField): Board = {
+  override def updated(coords: Point, item: Field): Board = {
     require(contains(coords))
 
     val (x, y) = coords

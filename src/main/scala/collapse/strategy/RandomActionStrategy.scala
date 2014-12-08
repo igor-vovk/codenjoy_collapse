@@ -14,7 +14,7 @@ class RandomActionStrategy extends Strategy {
   def rand(from: Int, to: Int) = (math.random * (to - from)).toInt + from
 
   override def act(board: Board): Move = new Move {
-    override def coords: (Int, Int) = (rand(1, board.size), rand(1, board.size))
+    override def from: (Int, Int) = (rand(1, board.size), rand(1, board.size))
 
     override def direction: Direction = Directions(rand(0, Directions.size))
   }

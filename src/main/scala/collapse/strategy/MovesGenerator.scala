@@ -1,23 +1,28 @@
 package collapse.strategy
 
+import collapse.strategy.Direction.Direction
 import collapse.{Field, Point, Board}
 
 object MovesGenerator {
 
-  private def isNumericField(board: Board, point: Point) = board(point).map(_.ch).exists(Field.isNumeric)
-
-  def possibleMovesFromPoint(board: Board, point: Point): Stream[Move] = for {
-    dir <- Direction.Directions.toStream
-    if isNumericField(board, point) && isNumericField(board, dir.add(point))
-  } yield MoveImpl(point, dir)
-
-  def allPossibleMoves(board: Board): Stream[Move] = {
-    val coordsStream = Stream.from(1).takeWhile(_ < board.size)
+  def possibleMovesFromPoint(board: Board, point: Point): Stream[Move] = {
+    def isMoveAllowed(dir: Direction): Boolean =
+      (board(point), board(dir.add(point))) match {
+        // Each field found or not
+        case (Some(fromField), Some(toField)) =>
+          // Fields must not have same values (move between "1" and "1" are not allowed) and be numeric
+          fromField != toField && Field.isNumeric(fromField) && Field.isNumeric(toField)
+        case _ => false
+      }
 
     for {
-      x <- coordsStream; y <- coordsStream
-      move <- possibleMovesFromPoint(board, (x, y))
-    } yield move
+      dir <- Direction.Directions.toStream
+      if isMoveAllowed(dir)
+    } yield MoveImpl(point, dir)
+  }
+
+  def allPossibleMoves(board: Board): Stream[Move] = BoardOps.fields(board).flatMap {
+    case (point, _) => possibleMovesFromPoint(board, point)
   }
 
 }

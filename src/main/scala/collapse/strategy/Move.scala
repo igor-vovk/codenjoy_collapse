@@ -5,10 +5,12 @@ import collapse.strategy.Direction._
 
 trait Move {
 
-  def coords: Point
+  def from: Point
 
   def direction: Direction
 
+  def to: Point = direction.add(from)
+
 }
 
-case class MoveImpl(coords: Point, direction: Direction) extends Move
+case class MoveImpl(from: Point, direction: Direction) extends Move
