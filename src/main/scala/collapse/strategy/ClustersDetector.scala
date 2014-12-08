@@ -32,4 +32,20 @@ object ClustersDetector {
     }
   }
 
+  /**
+   * Relation between cluster size and score:
+   * 1 => 1
+   * 2 => 1 + 2 = 3
+   * 3 => 1 + 2 + 3 = 6
+   * @param cluster
+   * @return
+   */
+  def score(cluster: Cluster): Int = (1 to cluster.size).sum
+
+  /**
+   * Overall score of board clusters
+   * @param board
+   * @return
+   */
+  def boardScore(board: Board): Int = detect(board).map(score).sum
 }
