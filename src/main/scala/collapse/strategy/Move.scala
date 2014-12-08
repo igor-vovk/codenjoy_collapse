@@ -9,7 +9,7 @@ trait Move {
 
   def direction: Direction
 
-  def to: Point = direction.add(from)
+  lazy val to: Point = direction.add(from)
 
 }
 

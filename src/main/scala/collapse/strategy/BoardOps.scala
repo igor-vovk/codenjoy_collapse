@@ -15,6 +15,10 @@ object BoardOps {
     }
   }
 
+  def numericFields(board: Board): Stream[(Point, Field)] = fields(board).filter {
+    case (_, field) => Field.isNumeric(field)
+  }
+
   def mkMove(board: Board, move: Move): Board = ???
 
 }

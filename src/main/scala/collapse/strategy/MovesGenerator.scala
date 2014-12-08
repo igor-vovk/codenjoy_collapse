@@ -5,13 +5,20 @@ import collapse.{Field, Point, Board}
 
 object MovesGenerator {
 
-  def possibleMovesFromPoint(board: Board, point: Point): Stream[Move] = {
+  /**
+   * At depth 1
+   * @param board
+   * @param point
+   * @return
+   */
+  def possibleMovesFromPoint(board: Board, point: Point,
+                             ignoreSameFields: Boolean = true): Stream[Move] = {
     def isMoveAllowed(dir: Direction): Boolean =
       (board(point), board(dir.add(point))) match {
         // Each field found or not
         case (Some(fromField), Some(toField)) =>
           // Fields must not have same values (move between "1" and "1" are not allowed) and be numeric
-          fromField != toField && Field.isNumeric(fromField) && Field.isNumeric(toField)
+          ((ignoreSameFields && fromField != toField) || !ignoreSameFields) && Field.isNumeric(fromField) && Field.isNumeric(toField)
         case _ => false
       }
 
