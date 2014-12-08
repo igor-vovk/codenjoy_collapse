@@ -1,9 +1,9 @@
 package collapse.strategy
 
-import collapse.{Board, Coords}
+import collapse.{Board, Point}
 
 object ClustersDetector {
 
-  def detect(board: Board): Seq[Seq[Coords]] = ???
+  def detect(board: Board): Seq[Seq[Point]] = ???
 
 }

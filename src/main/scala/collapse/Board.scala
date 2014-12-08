@@ -20,6 +20,8 @@ object Field {
     chRepr -> NumericField(chRepr, num)
   }.toMap
 
+  def isNumeric(ch: Char): Boolean = NumChars.contains(ch)
+
   def charToField(ch: Char): Option[Field] = ch match {
     case None.ch => Some(None)
     case Border.ch => Some(Border)
@@ -63,9 +65,11 @@ trait Board {
 
   def size: Int
 
-  def get(coords: Coords): Field
+  def contains(point: Point): Boolean
 
-  def set(coords: Coords, item: NumericField): Board
+  def get(point: Point): Field
+
+  def set(point: Point, item: NumericField): Board
 
   override def toString: String = "Board(" + Board.serialize(this) + ")"
 
@@ -75,16 +79,20 @@ class SeqBackedBoardImpl(underlying: Seq[Seq[Field]]) extends Board {
 
   override def size = underlying.size
 
-  override def get(coords: Coords) = underlying(coords._1)(coords._2)
+  override def contains(point: Point): Boolean = {
+    def isInBounds(a: Int) = a > 0 && a < size
 
-  override def set(coords: Coords, item: NumericField): Board = {
+    val (x, y) = point
+
+    Seq(x, y).forall(isInBounds)
+  }
+
+  override def get(coords: Point) = underlying(coords._1)(coords._2)
+
+  override def set(coords: Point, item: NumericField): Board = {
+    require(contains(coords))
+
     val (x, y) = coords
-
-    // Check that coordinate is in bounds
-    for (coord <- Seq(x, y)) {
-      require(coord > 0 && coord < size)
-    }
-
     new SeqBackedBoardImpl(underlying.updated(x, underlying(x).updated(y, item)))
   }
 

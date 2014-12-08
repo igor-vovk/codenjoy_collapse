@@ -1,5 +1,5 @@
 package object collapse {
 
-  type Coords = (Int, Int)
+  type Point = (Int, Int)
 
 }
