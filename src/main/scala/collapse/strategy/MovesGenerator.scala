@@ -4,15 +4,11 @@ import collapse.{Field, Point, Board}
 
 object MovesGenerator {
 
-  private def isNumericField(board: Board, point: Point): Boolean = Field.isNumeric(board.get(point).ch)
+  private def isNumericField(board: Board, point: Point) = board(point).map(_.ch).exists(Field.isNumeric)
 
   def possibleMovesFromPoint(board: Board, point: Point): Stream[Move] = for {
     dir <- Direction.Directions.toStream
-    if {
-      val newPoint = dir.add(point)
-
-      board.contains(newPoint) && isNumericField(board, point) && isNumericField(board, newPoint)
-    }
+    if isNumericField(board, point) && isNumericField(board, dir.add(point))
   } yield MoveImpl(point, dir)
 
   def allPossibleMoves(board: Board): Stream[Move] = {

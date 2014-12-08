@@ -67,6 +67,8 @@ trait Board {
 
   def contains(point: Point): Boolean
 
+  def apply(point: Point): Option[Field] = if (contains(point)) Some(get(point)) else None
+
   def get(point: Point): Field
 
   def set(point: Point, item: NumericField): Board
