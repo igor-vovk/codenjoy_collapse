@@ -8,6 +8,7 @@ object ClustersDetector {
 
   type Cluster = Set[Point]
 
+  // TODO: find more optimal solution
   @tailrec
   def detect(board: Board, clusters: Seq[Cluster] = Seq.empty): Seq[Cluster] = {
     val fields = BoardOps.numericFields(board)
@@ -24,7 +25,7 @@ object ClustersDetector {
 
         // Change already detected fields to empty ones
         val newBoard = (board /: cluster) {
-          case (b, point) => b.updated(point, Field.None)
+          case (b, point) => b.updated(point, Field.Empty)
         }
 
         detect(newBoard, clusters :+ cluster)

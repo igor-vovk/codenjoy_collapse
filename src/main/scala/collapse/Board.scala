@@ -7,10 +7,16 @@ object Field {
   sealed trait Field {
     def ch: Char
   }
-  case class Item(ch: Char) extends Field
 
-  val None = Item(' ')
-  val Border = Item('☼')
+  case object Empty extends Field {
+    val ch = ' '
+  }
+
+  case object Border extends Field {
+    val ch = '☼'
+  }
+
+  case class Item(ch: Char) extends Field
 
   val NumFields = (0 to 9).map(num => Item(num.toString.apply(0)))
   val NumChars = NumFields.map(field => field.ch -> field).toMap
@@ -20,7 +26,7 @@ object Field {
   def isNumeric(field: Field): Boolean = NumFields.contains(field)
 
   def charToField(ch: Char): Option[Field] = ch match {
-    case None.ch => Some(None)
+    case Empty.ch => Some(Empty)
     case Border.ch => Some(Border)
     case _ => NumChars.get(ch)
   }
@@ -39,16 +45,28 @@ object Board {
     new SeqBackedBoardImpl(boardArr)
   }
 
+  //  def generate(size: Int): Board = {
+  //    val range = 0 to (size - 1)
+  //
+  //
+  //    val a = for {
+  //      y <- 0 to (size - 1)
+  //      x <- 0 to (size - 1)
+  //    } yield Field.NumFields((math.random * 9).toInt)
+  //
+  //    new SeqBackedBoardImpl(a)
+  //  }
+
   def serialize(board: Board): String = {
     val sb = new StringBuilder
     sb.append("\r\n")
 
     for {
-      x <- 0 to (board.size - 1)
       y <- 0 to (board.size - 1)
+      x <- 0 to (board.size - 1)
     } {
       sb.append(board.get(x, y).ch)
-      if (y == board.size - 1) {
+      if (x == board.size - 1) {
         sb.append("\r\n")
       }
     }
@@ -79,20 +97,39 @@ class SeqBackedBoardImpl(underlying: Seq[Seq[Field]]) extends Board {
   override lazy val size = underlying.size
 
   override def contains(point: Point): Boolean = {
-    def isInBounds(a: Int) = a > 0 && a < size
-
     val (x, y) = point
 
-    Seq(x, y).forall(isInBounds)
+    x >= 0 && x < size && y >= 0 && y < size
   }
 
-  override def get(coords: Point) = underlying(coords._1)(coords._2)
+  override def get(coords: Point) = underlying(coords._2)(coords._1)
 
   override def updated(coords: Point, item: Field): Board = {
-    require(contains(coords))
+    require(contains(coords), s"Board doesn't contains point $coords")
 
     val (x, y) = coords
-    new SeqBackedBoardImpl(underlying.updated(x, underlying(x).updated(y, item)))
+    new SeqBackedBoardImpl(underlying.updated(y, underlying(y).updated(x, item)))
   }
 
+}
+
+trait Projection {
+  def get(board: Board, lineNum: Int): List[Field]
+
+  def updated(board: Board, lineNum: Int, value: List[Field]): Board
+}
+
+object VerticalProjection extends Projection {
+  override def updated(board: Board, x: Int, value: List[Field]): Board = {
+    require(value.size == board.size, "Row length must be equal to board size")
+
+    (board /: value.zipWithIndex) {
+      case (b, (field, y)) =>
+        val coords = (x, y)
+
+        if (b.get(coords) != field) b.updated(coords, field) else b
+    }
+  }
+
+  override def get(board: Board, x: Int): List[Field] = (0 to (board.size - 1)).map(y => board.get(x, y)).toList
 }

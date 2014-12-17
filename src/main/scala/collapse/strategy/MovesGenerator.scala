@@ -25,7 +25,7 @@ object MovesGenerator {
     for {
       dir <- Direction.Directions.toStream
       if isMoveAllowed(dir)
-    } yield MoveImpl(point, dir)
+    } yield Move(point, dir)
   }
 
   def allPossibleMoves(board: Board): Stream[Move] = BoardOps.fields(board).flatMap {
