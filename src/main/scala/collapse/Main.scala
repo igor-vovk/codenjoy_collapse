@@ -3,8 +3,8 @@ package collapse
 import java.net.URI
 
 import akka.actor.ActorSystem
-import collapse.strategy.{PriorityGroupStrategy, Direction, RandomActionStrategy}
-import io.backchat.hookup.{Disconnected, TextMessage, HookupClientConfig, DefaultHookupClient}
+import collapse.strategy._
+import io.backchat.hookup._
 
 
 object Main extends App {
@@ -17,6 +17,7 @@ object Main extends App {
   val boardRegexp = "^board=(.*)$".r
 
   val strategy = new PriorityGroupStrategy(
+    BestScoreStrategy,
     RandomActionStrategy
   )
 
