@@ -45,17 +45,17 @@ object Board {
     new SeqBackedBoardImpl(boardArr)
   }
 
-  //  def generate(size: Int): Board = {
-  //    val range = 0 to (size - 1)
-  //
-  //
-  //    val a = for {
-  //      y <- 0 to (size - 1)
-  //      x <- 0 to (size - 1)
-  //    } yield Field.NumFields((math.random * 9).toInt)
-  //
-  //    new SeqBackedBoardImpl(a)
-  //  }
+  def generate(size: Int): Board = {
+    val range = 0 until size
+
+    val a = range.map(y => {
+        range.map(x => {
+          Field.NumFields((math.random * 9).toInt)
+        }).toSeq
+    }).toSeq
+
+    new SeqBackedBoardImpl(a)
+  }
 
   def serialize(board: Board): String = {
     val sb = new StringBuilder
