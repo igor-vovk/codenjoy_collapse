@@ -34,6 +34,13 @@ object ClustersDetector {
   }
 
   /**
+   * Detect clusters with size gt 1 (1 point is not a cluster actually)
+   * @param board
+   * @return
+   */
+  def detectNotEmpty(board: Board): Seq[Cluster] = detect(board).filter(_.size > 1)
+
+  /**
    * Relation between cluster size and score:
    * 1 => 1
    * 2 => 1 + 2 = 3
@@ -48,5 +55,5 @@ object ClustersDetector {
    * @param board
    * @return
    */
-  def boardScore(board: Board): Int = detect(board).map(score).sum
+  def boardScore(board: Board): Int = detectNotEmpty(board).map(score).sum
 }

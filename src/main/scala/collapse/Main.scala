@@ -3,7 +3,7 @@ package collapse
 import java.net.URI
 
 import akka.actor.ActorSystem
-import collapse.strategy.{Direction, RandomActionStrategy, Strategy}
+import collapse.strategy.{PriorityGroupStrategy, Direction, RandomActionStrategy}
 import io.backchat.hookup.{Disconnected, TextMessage, HookupClientConfig, DefaultHookupClient}
 
 
@@ -16,7 +16,9 @@ object Main extends App {
 
   val boardRegexp = "^board=(.*)$".r
 
-  val strategy: Strategy = new RandomActionStrategy
+  val strategy = new PriorityGroupStrategy(
+    RandomActionStrategy
+  )
 
   new DefaultHookupClient(HookupClientConfig(uri)) {
     override def receive = {
@@ -27,7 +29,7 @@ object Main extends App {
 
         text match {
           case boardRegexp(boardStr) =>
-            val action = strategy.act(Board.parse(boardStr))
+            val action = strategy.actt(Board.parse(boardStr))
             val (x, y) = action.from
             val dir = Direction.strRepr(action.direction)
 

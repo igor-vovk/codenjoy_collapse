@@ -33,6 +33,8 @@ object BoardOps {
     board.updated(a, oldB).updated(b, oldA)
   }
 
+  def swap(board: Board, move: Move): Board = swap(board, move.from, move.to)
+
   def shift(fields: List[Field]): List[Field] = fields match {
     case Nil => Nil
     // If current element is empty,
@@ -48,7 +50,7 @@ object BoardOps {
 
   def mkMove(board: Board, move: Move): Board = {
     // 1. Just swap two points
-    val b1 = swap(board, move.from, move.to)
+    val b1 = swap(board, move)
 
     // 2. Remove clusters, with size gt 1, in which swapping points belongs to
     val b2 = {
