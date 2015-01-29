@@ -16,8 +16,8 @@ object Main extends App {
 
   val boardRegexp = "^board=(.*)$".r
 
-  val strategy = new PriorityGroupStrategy(
-    BestScoreStrategy,
+  val strategy = new StrategiesGroup(
+    ClusterGrowthStrategy,
     RandomActionStrategy
   )
 

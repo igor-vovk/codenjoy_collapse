@@ -15,9 +15,9 @@ object BoardOps {
     }
   }
 
-  def numericFields(board: Board): Stream[(Point, Field)] = fields(board).filter {
-    case (_, field) => Field.isNumeric(field)
-  }
+  def numericFields(board: Board) = fields(board).filter(p => Field.isNumeric(p._2))
+
+  def emptiness(board: Board) = fields(board).count(_._2 == Field.Empty)
 
   // Swap two points
   def swap(board: Board, a: Point, b: Point): Board = {
@@ -54,8 +54,8 @@ object BoardOps {
 
     // 2. Remove clusters, with size gt 1, in which swapping points belongs to
     val b2 = {
-      val pointsToRemove = ClustersDetector.detect(b1)
-        .filter(cluster => cluster.size > 1 && (cluster(move.from) || cluster(move.to)))
+      val pointsToRemove = ClustersDetector.detectNotEmpty(b1)
+        .filter(cluster => cluster(move.from) || cluster(move.to))
         .flatten
 
       (b1 /: pointsToRemove) {
